@@ -1,6 +1,3 @@
-
-
-
 def ask():
     selection = input('Do you want to calculate your Note for the test or overall? \n').lower().strip()
     print('')
@@ -31,15 +28,7 @@ def overall(test_result=None):
         return
     ue_test = seminar + test
 
-    # --- calculate result ---#
-    allowed_grades = [1, 1.3, 1.7, 2, 2.3, 2.7, 3, 3.3, 3.7, 4, 5]
-
-    result = 1 + 3 * (100 - ue_test) / 50
-    closest = min(allowed_grades, key=lambda x: abs(x - result))
-    if closest == result:
-        print('Your Note is: ' + str(result))
-    else:
-        print(f'You will probably be getting {closest}, because your grade is {result}')
+    grade(ue_test)
 
 
 def test():
@@ -64,6 +53,37 @@ def test():
         overall(result)
     else:
         print('Thank you for using this Programm! \n')
+
+def snap(x):
+    return round(x*4) /4
+
+def grade(points):
+    # --- calculate result ---#
+    allowed_grades = [1, 1.3, 1.7, 2, 2.3, 2.7, 3, 3.3, 3.7, 4, 5]
+
+    result = 1 + 3 * (100 - points) / 50
+    closest = min(allowed_grades, key=lambda x: abs(x - result))
+
+    print(f'You are probably getting {closest}, because your grade is {result:.3f}')
+
+    index = allowed_grades.index(closest)
+
+    better = None
+    worse = None
+
+    if index > 0:
+        better = allowed_grades[index - 1]
+    if index < len(allowed_grades) - 1:
+        worse = allowed_grades[index + 1]
+
+    if better is not None:
+        better_threshold = 100 - (better - 1) * 50 / 3
+        missing = max(0, better_threshold - points)
+        print(f'To get the better grade, you need to get {snap(missing)} points.')
+    if worse is not None:
+        worse_threshold = 100 - (worse - 1) * 50 / 3
+        buffer = max(0, points - worse_threshold)
+        print(f'To get a worse grade, you need to loose {snap(buffer)} points.')
 
 
 print('This Programm is used to calculate your Note.')
