@@ -2,6 +2,12 @@
 
 A modern macOS desktop app to calculate university grades using the Bavarian grading formula.
 
+## Download
+
+👉 Get latest macOS app here:
+
+https://github.com/Ruszmc/NotenCalc/releases/latest
+
 ## ✨ Features
 
 - Calculate overall module grades
