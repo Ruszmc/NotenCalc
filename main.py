@@ -3,59 +3,6 @@ import customtkinter as ctk
 ctk.set_appearance_mode("dark")   # "light" | "dark"
 ctk.set_default_color_theme("blue")
 
-
-def ask():
-    selection = input('Do you want to calculate your Note for the test or overall? \n').lower().strip()
-    print('')
-
-    if selection == 'overall':
-        overall()
-    elif selection == 'test':
-        test()
-    else:
-        ask()
-
-def overall(test_result=None):
-
-    # --- Get the values ---#
-    if test_result is not None:
-        test = float(test_result)
-        print('Your Test result was: ' + str(test_result))
-    else:
-        test = float(input('How many points did you get in the Test \n'))
-
-    seminar = float(input('How many points did you get in the Seminar \n'))
-
-    # --- check the conversion, if "true" add your total points together---#
-    if test > 50:
-        return
-    ue_test = seminar + test
-
-    grade(ue_test)
-
-def test():
-    # --- Get the values ---#
-    qst = input('How many questions did the test have? \n')
-    poi = input('How many points did you get in the Test? \n')
-
-    # --- convert to floats---#
-    poi = float(poi)
-    qst = float(qst)
-
-    # --- calculate result ---#
-    fac = 50 / qst
-    result = poi * fac
-
-    # --- use the right, number ---#
-    result = round(result * 4) / 4
-    print(result)
-
-    ans = input('Do you also want to calculate your overall score? (y/n)\n').lower()
-    if ans == 'y':
-        overall(result)
-    else:
-        print('Thank you for using this Programm! \n')
-
 def snap(x):
     return round(x*4) /4
 
@@ -100,7 +47,7 @@ class GradeApp(ctk.CTk):
         super().__init__()
 
         self.title("Grade Calculator")
-        self.geometry("420x420")
+        self.geometry("420x520")
 
         # Main container
         self.main = ctk.CTkFrame(self, corner_radius=15)
@@ -113,6 +60,16 @@ class GradeApp(ctk.CTk):
             font=("Arial", 22, "bold")
         )
         self.title_label.pack(pady=(20, 10))
+
+        self.mode = ctk.StringVar(value="overall")
+
+        self.mode_selector = ctk.CTkSegmentedButton(
+            self.main,
+            values=["overall", "test"],
+            variable=self.mode,
+            command=self.switch_mode
+        )
+        self.mode_selector.pack(pady=10)
 
         # Seminar input
         self.input_frame = ctk.CTkFrame(self.main)
@@ -137,6 +94,17 @@ class GradeApp(ctk.CTk):
         )
         self.calc_button.pack(pady=15)
 
+        # Test input
+        self.question_entry = ctk.CTkEntry(
+            self.input_frame,
+            placeholder_text="Number of questions"
+        )
+
+        self.points_entry = ctk.CTkEntry(
+            self.input_frame,
+            placeholder_text="Points in test"
+        )
+
         # Result Card
         self.result_frame = ctk.CTkFrame(self.main)
         self.result_frame.pack(padx=20, pady=10, fill="x")
@@ -149,24 +117,50 @@ class GradeApp(ctk.CTk):
         )
         self.output_label.pack(pady=15)
 
+    def switch_mode(self, value):
+
+        if value == "test":
+            self.seminar_entry.pack_forget()
+            self.test_entry.pack_forget()
+
+            self.question_entry.pack(padx=10, pady=10)
+            self.points_entry.pack(padx=10, pady=10)
+
+        else:
+            self.question_entry.pack_forget()
+            self.points_entry.pack_forget()
+
+            self.seminar_entry.pack(padx=10, pady=10)
+            self.test_entry.pack(padx=10, pady=10)
+
     def calculate(self):
         try:
-            seminar = float(self.seminar_entry.get())
-            test = float(self.test_entry.get())
-            points = seminar + test
 
-            data = grade(points)
+            if self.mode.get() == "overall":
+                seminar = float(self.seminar_entry.get())
+                test = float(self.test_entry.get())
+                points = seminar + test
 
-            data = grade(points)
+                data = grade(points)
 
-            text = f"Grade: {data['closest']}\n"
-            text += f"Calculated: {data['result']:.3f}\n"
+                text = f"Grade: {data['closest']}\n"
+                text += f"Calculated: {data['result']:.3f}\n"
 
-            if data["missing"] is not None:
-                text += f"\nPoints to better grade: {data['missing']}"
+                if data["missing"] is not None:
+                    text += f"\nPoints to better grade: {data['missing']}"
 
-            if data["buffer"] is not None:
-                text += f"\nPoints until worse grade: {data['buffer']}"
+                if data["buffer"] is not None:
+                    text += f"\nPoints until worse grade: {data['buffer']}"
+
+            else:
+
+                qst = float(self.question_entry.get())
+                poi = float(self.points_entry.get())
+
+                fac = 50 / qst
+                result = snap(poi * fac)
+
+                text = f"Your Test result was: {result:.3f}"
 
             self.output_label.configure(text=text)
 
