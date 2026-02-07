@@ -1,0 +1,8 @@
+altgraph==0.17.5
+customtkinter==5.2.2
+darkdetect==0.8.0
+macholib==1.16.4
+packaging==26.0
+pyinstaller==6.18.0
+pyinstaller-hooks-contrib==2026.0
+setuptools==81.0.0
