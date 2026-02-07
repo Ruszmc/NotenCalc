@@ -26,5 +26,4 @@ Grades are mapped to:
 
 ## 🚀 Installation
 
-Clone repo:
-
+Clone repo: git clone https://github.com/Ruszmc/NotenCalc.git
